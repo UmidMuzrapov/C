@@ -3,9 +3,11 @@ The code converts a number of a given base to its decimal form. The legal bases 
 
 ## Execution
 1. Compile code and create executable
-`gcc -Wall changeBase.c -o changeBase`
+
+	`gcc -Wall changeBase.c -o changeBase`
 1. Run the executable changeBase
-`changeBase`
+
+	`changeBase`
 1. Enter the base
 1. Enter the value you wish to conver to its decimal form.
 
