@@ -1,0 +1,8 @@
+p u
+p t
+p s
+q u
+q t
+r u
+r t
+r s

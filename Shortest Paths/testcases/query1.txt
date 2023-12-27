@@ -1,0 +1,8 @@
+tucson phoenix
+elPaso tucson
+chandler albuquerque
+flagstaff albuquerque
+phoenix lasCruces
+chandler phoenix
+tucson lasCruces
+tucson chandler

@@ -1,0 +1,8 @@
+newyork washington
+boston washington
+newyork boston
+boston newyork
+washington boston
+washington newyork
+boston boston
+boston boston

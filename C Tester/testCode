@@ -1,0 +1,214 @@
+#!/bin/bash
+
+<<summary
+	Author: Umid Muzrapov
+
+	Purpose: This is a bash script for testing C programs.
+	It is done a part of assignment 10.
+
+	Filename: testCode
+summary
+
+<<summary
+	Function Name: is_input_valid
+
+	Purpose: This function coordinates a number of methods
+	to validate command-line arguments and the existance
+	of the directory with testcases, program, and example program.
+
+	Return: 0 if valid. 1 otherwise.
+summary
+is_input_valid() {
+  local min_arguments=1
+  local max_arguments=2
+  
+  if [ "$#" -lt "$min_arguments" ]; then
+    echo "No program_name was given" >&2
+    echo 1
+		return 1
+  fi
+
+  if [ "$#" -gt "$max_arguments" ]; then
+    echo "Too many arguments were given" >&2
+    echo 1
+		return 1
+  fi
+
+  if [ "$#" -eq "$min_arguments" ]; then
+    if program_exists "$@" && exProgram_exists "$@"; then
+      echo 0  # true
+			return 0
+    else
+      echo 1  # false
+			return 1
+    fi
+  else
+    if program_exists "$@" && exProgram_exists "$@" && testcasedir_exists "$@"; then
+      echo 0  # true
+			return 0
+    else
+      echo 1  # false
+			return 1
+    fi
+  fi
+}
+
+<<summary
+	Function name: program_exists
+
+	Purpose: The function verifies the existance of 
+	the given executable.
+
+	Return: 0 if exists. 1 otherwise
+summary
+program_exists() {
+	if [ -e "${1}" ] && [ -x "${1}" ]; then
+    return 0  # true
+  else
+    echo "Program does not exist or not executable." >&2
+    return 1  # false
+  fi
+}
+
+<<summary
+	Function name: exProgram_exists
+
+	Purpose: The function ensures the existance
+	of the example executable.
+
+	Return: 0 if exists. 1 otherwise.
+summary
+exProgram_exists() {
+  if [ -e "$(get_example_program_name "$1")" ] && [ -x "$(get_example_program_name "$1")" ]; then
+    return 0  # true
+  else 
+    echo "exProgram does not exist or not executable." >&2
+    return 1  # false
+  fi
+}
+
+<<summary
+	Function name: testcasedir_exists
+
+	Purpose: The function checks the existance of the
+	test directory.
+
+	Return: 0 if exists. 1 otherwise.
+summary
+testcasedir_exists() {
+  if [ -d "$2" ]; then
+    return 0  # true
+  else 
+		echo "Test_dir does not exist." >&2
+    return 1  # false
+  fi
+}
+
+<<summary
+	Function name: get_example_program_name
+
+	Purpose: The function gets the name of the example
+	executable based on the program name.
+
+	Return: the name of the example executable
+summary
+get_example_program_name() {
+  local capitalized_program="${1^}"
+  local ex_program="ex${capitalized_program}"
+  echo "$ex_program"
+}
+
+result=$(is_input_valid "$@")
+
+# if validation fails
+if [ 1 -eq "$result" ]; then
+  exit 1
+fi
+
+min_arguments=1
+max_arguments=2
+program_name="${1}"
+test_dir=""
+
+if [ "$#" -eq $max_arguments ]; then
+  test_dir="${2}"
+else
+  test_dir="."
+fi
+
+testcase_start="test_$1"
+file_list=$(ls -a "${test_dir}/${testcase_start}"* 2>/dev/null)
+# if file list is empty, exit
+if [ -z "$file_list" ]; then
+    exit 0
+fi
+
+count=1
+my_exit_status=0;
+ex_exit_status=0;
+
+# for each test case, perfom a series of tests.
+for file in $file_list; do
+	{
+		timeout 2s "$program_name" < "$file" > "myOut${count}" 2> "myError${count}"
+		my_exit_status=$?
+	} &> /dev/null
+
+	{
+		timeout 2s "$(get_example_program_name "$program_name")" < "$file" > "exOut${count}" 2> "exError${count}"
+		ex_exit_status=$?
+	} &> /dev/null
+ 	
+	testcase_name=${file##*/}
+
+	if [ ${my_exit_status} -eq 124 ]; then
+		echo "*** testcase: ${testcase_name} [ FAILED - Timed out ]"
+		continue
+	fi
+	
+	if [ "$my_exit_status" -gt 124 ]; then
+		echo "*** testcase: ${testcase_name} [ FAILED - Abnormal termination ]"
+		continue
+	fi
+	
+	diff_result_stdout=$(diff -Z "myOut$count" "exOut$count")
+	
+	if [ $? -eq 0 ]; then
+		echo "*** testcase: ${testcase_name} [ stdout - PASSED ]"
+	else
+		echo "*** testcase: ${testcase_name} [ stdout - FAILED ]"
+	fi
+	
+	if [ "$my_exit_status" -eq "$ex_exit_status" ]; then
+		echo "*** testcase: ${testcase_name} [ return code - PASSED ]"
+	else
+		echo "*** testcase: ${testcase_name} [ return code - FAILED ]"
+	fi
+	
+	my_err_count=$(wc -l < "myError$count")
+	ex_err_count=$(wc -l < "exError$count")
+
+	if [ $my_err_count -eq $ex_err_count ]; then
+		echo "*** testcase: ${testcase_name} [ stderr - PASSED ]"
+	else
+		echo "*** testcase: ${testcase_name} [ stderr - FAILED ]"
+	fi
+	
+	valgrind "$program_name" < "$file" > "valgrind${count}" 2>&1
+
+	if grep -q "ERROR SUMMARY: 0 errors" "valgrind${count}"; then
+    echo "*** testcase: ${testcase_name} [ valgrind - PASSED ]"
+	else
+    echo "*** testcase: ${testcase_name} [ valgrind - FAILED ]"
+	fi
+
+	if grep -q "All heap blocks were freed" "valgrind${count}"; then
+    echo "*** testcase: ${testcase_name} [ memory free - PASSED ]"
+	else
+    echo "*** testcase: ${testcase_name} [ memory free - FAILED ]"
+	fi
+	
+	((count++))
+
+done 
+exit 0

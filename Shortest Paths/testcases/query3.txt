@@ -1,0 +1,8 @@
+london amsterdam
+paris amsterdam
+paris london
+amsterdam paris
+amsterdam london
+amsterdam amsterdam
+paris paris
+london london

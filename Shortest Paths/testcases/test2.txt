@@ -1,0 +1,3 @@
+newyork boston 215
+newyork washington 225
+washington boston 440

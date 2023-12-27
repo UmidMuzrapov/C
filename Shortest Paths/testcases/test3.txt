@@ -1,0 +1,3 @@
+london paris 315
+london amsterdam 329
+paris amsterdam 507

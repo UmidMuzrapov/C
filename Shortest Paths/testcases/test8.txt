@@ -1,0 +1,6 @@
+p q 15
+p r 8
+q r 10
+r s 5
+s t 3
+t u 7

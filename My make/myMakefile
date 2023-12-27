@@ -1,0 +1,10 @@
+A: B C
+	echo A
+B: D
+	echo B
+C: E
+	echo C
+D: E
+	echo D
+E: D
+	echo E
