@@ -9,7 +9,7 @@ It dynamically allocates the memory and stored values in the linked list.
 1. Run the executable changeBase
 
 	`count < input`
-   or
+or
 	`count`
 
 ## Error conditions and assumptions
