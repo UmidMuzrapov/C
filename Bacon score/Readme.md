@@ -26,4 +26,4 @@ Movie: {name of movie}
 
 <actorn>
 
-<Movie>: {name of the movie}
+Movie: {name of the movie}
