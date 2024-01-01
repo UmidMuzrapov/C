@@ -14,9 +14,9 @@ The file should adhere to the following format:
 
 Movie: {name of movie}
 
-<actor1>
+{actor1}
   
-<actor2>
+{actor2}
   
 .
 
@@ -24,6 +24,6 @@ Movie: {name of movie}
 
 .
 
-<actorn>
+{actorn}
 
 Movie: {name of the movie}
