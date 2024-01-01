@@ -5,4 +5,4 @@ It recursively checks the file existence and timestamps, building the project.
 The utility avoids unnecessary compilation, providing high efficiency.
 
 ## Invocation
-`mymake2 [-f aMakeFile] [aTarget]
+`mymake2 [-f aMakeFile] [aTarget]`
