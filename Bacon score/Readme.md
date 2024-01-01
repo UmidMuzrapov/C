@@ -12,7 +12,7 @@ bacon inFile
 ## Input File Format
 The file should adhere to the following format:
 
-Movie: <name of movie>
+Movie: {name of movie}
 
 <actor1>
   
@@ -26,4 +26,4 @@ Movie: <name of movie>
 
 <actorn>
 
-<Movie>: <name of the movie>
+<Movie>: {name of the movie}
