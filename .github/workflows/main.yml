@@ -1,0 +1,28 @@
+name: C Code Lint and Format
+
+on: [push]
+
+jobs:
+  lint_and_format:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install build tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cppcheck clang-format
+
+    - name: Lint C code
+      run: cppcheck --enable=all --error-exitcode=1 .
+
+    - name: Format C code
+      run: clang-format -i -style=file *.c
+
+    - name: Commit changes (if any)
+      run: |
+        git diff --exit-code || (git config --global user.email "github-actions@github.com" && git config --global user.name "GitHub Actions" && git commit -am "Auto-format code" && git push)
+
